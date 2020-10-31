@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 const getTemplate = (data = [], placeholder, selectedId) => {
     let text = placeholder ?? 'Placeholder default'
     const items = data.map(i => {
@@ -29,15 +31,15 @@ export class Select {
         this.$el = document.querySelector(selector)
         this.options = options
         this.selectedId = options.selectedId
+        this.data = []
 
-        this.#render()
-        this.#setup()
+        this.#fetched()
     }
 
     #render() {
-        const {placeholder, data} = this.options
+        const {placeholder} = this.options
         this.$el.classList.add('select')
-        this.$el.innerHTML = getTemplate(data, placeholder, this.selectedId)
+        this.$el.innerHTML = getTemplate(this.data, placeholder, this.selectedId)
     }
 
     #setup() {
@@ -45,6 +47,21 @@ export class Select {
         this.$el.addEventListener('click', this.clickHandler)
         this.$arrow = this.$el.querySelector('[data-type="arrow"]')
         this.$value = this.$el.querySelector('[data-type="value"]')
+    }
+
+    #fetched() {
+        axios.get(this.options.url)
+            .then(res => {
+                const data = res.data
+                data.map(i => {
+                    this.data.push({
+                        id: i.id,
+                        value: i.name
+                    })
+                })
+                this.#render()
+                this.#setup()
+            })
     }
 
     clickHandler(event) {
@@ -65,11 +82,11 @@ export class Select {
     }
 
     get current() {
-        return this.options.data.find(item => item.id === this.seelctedId)
+        return this.data.find(item => item.id === Number(this.selectedId))
     }
 
     select(id) {
-        this.seelctedId = id
+        this.selectedId = id
         this.$value.textContent = this.current.value
 
         this.$el.querySelectorAll('[data-type="item"]').forEach(el => {
