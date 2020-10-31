@@ -1,20 +1,18 @@
-const getTemplate = (placeholder) => {
+const getTemplate = (data = [], placeholder) => {
+    const text = placeholder ?? 'Placeholder default'
+    const items = data.map(i => {
+        return `
+            <li class="select__item" data-type="item" data-id="${i.id}">${i.value}</li>
+        `
+    })
     return `
         <div class="select__input" data-type="input">
-                <span>${placeholder}</span>
+                <span data-type="value">${text}</span>
                 <i class="fa fa-chevron-down" data-type="arrow"></i>
             </div>
             <div class="select__dropdown">
                 <ul class="select__list">
-                    <li class="select__item">Test1</li>
-                    <li class="select__item">Test2</li>
-                    <li class="select__item">Test3</li>
-                    <li class="select__item">Test3</li>
-                    <li class="select__item">Test3</li>
-                    <li class="select__item">Test3</li>
-                    <li class="select__item">Test3</li>
-                    <li class="select__item">Test3</li>
-                    <li class="select__item">Test3</li>
+                    ${items.join('')}
                 </ul>
             </div>
     `
@@ -24,21 +22,23 @@ export class Select {
     constructor(selector, options) {
         this.$el = document.querySelector(selector)
         this.options = options
+        this.seelctedId = null
 
         this.#render()
         this.#setup()
     }
 
     #render() {
-        const {placeholder} = this.options
+        const {placeholder, data} = this.options
         this.$el.classList.add('select')
-        this.$el.innerHTML = getTemplate(placeholder)
+        this.$el.innerHTML = getTemplate(data, placeholder)
     }
 
     #setup() {
         this.clickHandler = this.clickHandler.bind(this)
         this.$el.addEventListener('click', this.clickHandler)
         this.$arrow = this.$el.querySelector('[data-type="arrow"]')
+        this.$value = this.$el.querySelector('[data-type="value"]')
     }
 
     clickHandler(event) {
@@ -46,11 +46,23 @@ export class Select {
         
         if (type === 'input') {
             this.toggle()
+        } else if (type === 'item') {
+            const id = event.target.dataset.id
+            this.select(id)
         }
     }
 
     get isOpen() {
         return this.$el.classList.contains('open')
+    }
+
+    get current() {
+        return this.options.data.find(item => item.id === this.seelctedId)
+    }
+
+    select(id) {
+        this.seelctedId = id
+        this.$value.textContent = this.current.value
     }
 
     toggle() {
