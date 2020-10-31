@@ -11,7 +11,10 @@ const select = new Select('#select', {
         {id: '4', value: 'Element four'},
         {id: '5', value: 'Element five'},
         {id: '6', value: 'Element six'}
-    ]
+    ],
+    onSelect(item) {
+        console.log('selected item: ', item)
+    }
 })
 
 
