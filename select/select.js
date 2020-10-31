@@ -1,8 +1,13 @@
-const getTemplate = (data = [], placeholder) => {
-    const text = placeholder ?? 'Placeholder default'
+const getTemplate = (data = [], placeholder, selectedId) => {
+    let text = placeholder ?? 'Placeholder default'
     const items = data.map(i => {
+        let cls = ''
+        if (i.id === selectedId) {
+            text = i.value
+            cls = 'selected'
+        }
         return `
-            <li class="select__item" data-type="item" data-id="${i.id}">${i.value}</li>
+            <li class="select__item ${cls}" data-type="item" data-id="${i.id}">${i.value}</li>
         `
     })
     return `
@@ -22,7 +27,7 @@ export class Select {
     constructor(selector, options) {
         this.$el = document.querySelector(selector)
         this.options = options
-        this.seelctedId = null
+        this.selectedId = options.selectedId
 
         this.#render()
         this.#setup()
@@ -31,7 +36,7 @@ export class Select {
     #render() {
         const {placeholder, data} = this.options
         this.$el.classList.add('select')
-        this.$el.innerHTML = getTemplate(data, placeholder)
+        this.$el.innerHTML = getTemplate(data, placeholder, this.selectedId)
     }
 
     #setup() {
@@ -88,5 +93,6 @@ export class Select {
 
     destroy() {
         this.$el.removeEventListener('click', this.clickHandler)
+        this.$el.innerHTML = ''
     }
 }
