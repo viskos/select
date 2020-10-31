@@ -33,8 +33,10 @@ $height: 46px;
         border-radius: 5px;
         height: $height;
         display: flex;
+        justify-content: space-between;
         align-items: center;
         padding: 0 1rem;
+        cursor: pointer;
     }
     &__dropdown {
         display: none;
@@ -47,5 +49,22 @@ $height: 46px;
         max-height: 200px;
         overflow-y: auto;
         box-shadow: 2px 3px 5px rgba(0,0,0,.3);
+    }
+
+    &__list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    &__item {
+        padding: 1rem;
+        border-bottom: 1px solid #ccc;
+
+        &:hover {
+            background-color: #eee;
+            cursor: pointer;
+            transition: .15s background-color ease-in;
+        }
     }
 }
